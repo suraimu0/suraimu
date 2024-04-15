@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mario Game</title>
+<style>
+    #game-board {
+        width: 800px;
+        height: 400px;
+        border: 2px solid black;
+        position: relative;
+    }
+
+    .block {
+        width: 40px;
+        height: 40px;
+        background-color: gray;
+        position: absolute;
+    }
+
+    #mario {
+        width: 40px;
+        height: 60px;
+        background-color: red;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+    }
+</style>
+</head>
+<body>
+
+<div id="game-board">
+    <div id="mario"></div>
+    <div class="block" style="bottom: 40px; left: 200px;"></div>
+    <div class="block" style="bottom: 40px; left: 240px;"></div>
+    <div class="block" style="bottom: 40px; left: 280px;"></div>
+</div>
+
+<script>
+    const mario = document.getElementById('mario');
+    const blocks = document.querySelectorAll('.block');
+
+    let isJumping = false;
+
+    function jump() {
+        if (!isJumping) {
+            isJumping = true;
+            let currentPosition = 0;
+            const jumpInterval = setInterval(() => {
+                if (currentPosition >= 140) {
+                    clearInterval(jumpInterval);
+                    const fallInterval = setInterval(() => {
+                        if (currentPosition === 0) {
+                            clearInterval(fallInterval);
+                            isJumping = false;
+                        } else {
+                            currentPosition -= 20;
+                            mario.style.bottom = currentPosition + 'px';
+                        }
+                    }, 30);
+                } else {
+                    currentPosition += 20;
+                    mario.style.bottom = currentPosition + 'px';
+                }
+            }, 30);
+        }
+    }
+
+    function checkCollision() {
+        const marioRect = mario.getBoundingClientRect();
+        blocks.forEach(block => {
+            const blockRect = block.getBoundingClientRect();
+            if (marioRect.bottom >= blockRect.top && marioRect.top <= blockRect.bottom && marioRect.right >= blockRect.left && marioRect.left <= blockRect.right) {
+                block.style.backgroundColor = 'transparent';
+            }
+        });
+    }
+
+    document.addEventListener('keydown', event => {
+        if (event.code === 'Space') {
+            jump();
+        }
+    });
+
+    setInterval(checkCollision, 100);
+</script>
+
+</body>
+</html>
